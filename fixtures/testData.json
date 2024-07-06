@@ -1,0 +1,14 @@
+{
+    "baseUrl": "https://jsonplaceholder.typicode.com",
+    "endpoint": "/posts",
+    "postBody": {
+        "title": "foo",
+        "body": "bar",
+        "userId": 1
+    },
+    "patchBody": {
+        "title": "updatedTitle"
+    },
+    "allPostsCount": null,
+    "createdPostId": null
+}
