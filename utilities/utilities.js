@@ -1,8 +1,11 @@
 const { request, expect } = require('@playwright/test');
 import testData from '../fixtures/testData.json'
 
+export default class Utilities{
 
-    async function getRequest(baseUrl,pathParams=[]){
+    static testDataMap = new Map();
+
+    static async getRequest(baseUrl,pathParams=[]){
         try {
             const url = pathParams.length > 0 ? `${baseUrl}/${pathParams.join('/')}`:baseUrl;
             const requestContext = await request.newContext();
@@ -13,75 +16,73 @@ import testData from '../fixtures/testData.json'
         }
     }
 
-    async function verifyStatusCode(response,expectedStatus){
+    static async verifyStatusCode(response,expectedStatus){
         try {
             const status = await response.status();
             expect(status).toBe(expectedStatus);
         } catch (error) {
-            console.log('Error making GET request :',error);
+            console.log('Error on assertion statuses :',error);
             throw error;
         }
     }
 
-    async function storePostsCount(response){
+    static async storePostsCount(response){
         try {
             const body = await response.json();
             testData['allPostsCount'] = await body.length;         
         } catch (error) {
-            console.log('Error making GET request :',error);
+            console.log('Error on storing post counts :',error);
             throw error;
         }
     }
 
-    async function createPost(baseUrl,requestBody) {
-        const requestContext = await request.newContext();
-        return await requestContext.post(baseUrl,{data:testData.postBody});
+    static async createPost(baseUrl,requestBody) {
+        try {
+            const requestContext = await request.newContext();
+            return await requestContext.post(baseUrl,{data:requestBody});
+        } catch (error) {
+            console.log('Error making POST request :',error);
+            throw error;            
+        }
     }
 
-    async function storeCreatedPostField(response,fieldName) {
+    static async storeCreatedPostField(response,fieldName) {
         try {
             const body = await response.json();
-            testData['createdPostId'] = await body[fieldName];
-            return testData['createdPostId'];
+            this.testDataMap.set(fieldName,await body[fieldName]);
         } catch (error) {
-            console.log('Error making GET request :',error);
+            console.log('Error on reading json :',error);
             throw error;
         }
     }
 
-    async function verifyFields(response,fieldName,expectedValue) {
+    static async verifyFields(response,fieldName,expectedValue) {
         try {
             const body = await response.json();
             expect(body[fieldName]).toBe(expectedValue);
         } catch (error) {
-            console.log('Error making GET request :',error);
+            console.log('Error on fieldname assertions :',error);
             throw error;
         }
     }
 
-    async function updatePost(baseUrl,requestBody) {
+    static async updatePost(baseUrl,requestBody) {
         const requestContext = await request.newContext();
         return await requestContext.patch(baseUrl,{data:testData.patchBody});
     }
 
-    async function deletePost(baseUrl,pathParams=[]) {
+    static async deletePost(baseUrl,pathParams=[]) {
         try {
             const url = pathParams.length > 0 ? `${baseUrl}/${pathParams.join('/')}`:baseUrl;
             const requestContext = await request.newContext();
             return await requestContext.delete(url);
         } catch (error) {
-            console.log('Error making GET request :',error);
+            console.log('Error making DELETE request :',error);
             throw error;
         }
     }
 
-module.exports = {
-    getRequest,
-    verifyStatusCode,
-    storePostsCount,
-    createPost,
-    storeCreatedPostField,
-    verifyFields,
-    updatePost,
-    deletePost
-};
+    static async verifyPostsCount(actualLength, expectedLength) {
+        expect(actualLength).toBe(expectedLength);
+    }
+}
