@@ -22,7 +22,7 @@ test("Create new post", async ()=>{
 
 test.skip("Get post with id", async ()=>{
     const url = `${testData.baseUrl}${testData.endpoint}`;
-    const response = await utils.getRequest(url,[testData.createdPostId]);
+    const response = await utils.getRequest(url,createdPostId);
     await utils.verifyStatusCode(response,200)
     await utils.verifyFields(response,'title',testData.postBody.title)
     await utils.verifyFields(response,'userId',testData.postBody.userId)
@@ -30,7 +30,7 @@ test.skip("Get post with id", async ()=>{
 })
 
 test("Update created post", async ()=>{
-    const url = `${testData.baseUrl}${testData.endpoint}/3`;
+    const url = `${testData.baseUrl}${testData.endpoint}/${createdPostId}`;
     const response = await utils.updatePost(url,{data:testData.patchBody.title});
     await utils.verifyStatusCode(response,200);
     await utils.verifyFields(response,'title',testData.patchBody.title);

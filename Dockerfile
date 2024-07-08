@@ -15,4 +15,3 @@ RUN npm install
 COPY . .
 
 ENTRYPOINT ["npx", "playwright", "test"]
-
